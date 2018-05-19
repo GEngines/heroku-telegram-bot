@@ -31,6 +31,10 @@ import requests
 import datetime
 from time import sleep
 import telepot
+import os, time
+
+os.environ["TZ"] = "Asia/Calcutta"
+time.tzset()
 
 greet_bot = telepot.Bot(WelcomeBot_Token)
 reply_bot = telepot.Bot(ReplyBot_Token)
