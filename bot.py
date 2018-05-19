@@ -1,16 +1,40 @@
-# -*- coding: utf-8 -*-
 
-import os
-import telebot
+
+
+
+
+welcome_message = """Hey There <name>,
+Welcome to our profound community. Glad you have considered to be part of this community.
+
+These are few rules, we would like you to adhere to, when interacting with anyone in this group.
+
+1.No Foul Language.
+
+
+Many Thanks!
+Bot"""
+
+
+leaving_message = "Sorry to see you leave our community! <name>, Please share your feedback."
+leaving_message_to_the_group = "Oops! We just lost <name>"
+
+WelcomeBot_Token = "570531436:AAGhlmqiyehM7hS_GzmvS9_pdnhUN96VFV8"
+ReplyBot_Token = "600394117:AAFWzJN8ybJTo5IKhEyYtPKxNjkGBvxVugA"
+
+greetings = ('hello', 'hi', 'greetings', 'sup', "greet me")
+
+
+############### Do NOT modify anything beyond this point ######################################
+
+
 import requests
 import datetime
 from time import sleep
 import telepot
 
-greet_bot = telepot.Bot("570531436:AAGhlmqiyehM7hS_GzmvS9_pdnhUN96VFV8")
-reply_bot = telepot.Bot("600394117:AAFWzJN8ybJTo5IKhEyYtPKxNjkGBvxVugA")
+greet_bot = telepot.Bot(WelcomeBot_Token)
+reply_bot = telepot.Bot(ReplyBot_Token)
 
-greetings = ('hello', 'hi', 'greetings', 'sup', "greet me")
 now = datetime.datetime.now()
 
 def main():
@@ -47,43 +71,20 @@ def main():
                     chat_user_first_name = each["first_name"]
                     print(chat_user_id)
 
-                    greet_bot.sendMessage(chat_user_id, """Hey There *{}*,
-    Welcome to our profound community. Glad you have considered to be part of this community.
-    
-    These are few rules, we would like you to adhere to, when interacting with anyone in this group.
-    
-    1.No Foul Language.
-    
-    
-    Many Thanks!
-    Bot""".format(chat_user_first_name), "MarkDown")
+                    greet_bot.sendMessage(chat_user_id, welcome_message.replace("<name>", "*"+chat_user_first_name+"*"), "MarkDown")
+                    greet_bot.sendMessage(chat_group_id, welcome_message.replace("<name>", "*"+chat_user_first_name+"*"), "MarkDown")
 
-                    greet_bot.sendMessage(chat_group_id, """Hey There *{0}*,
-    Welcome to our profound community. Glad you have considered to be part of this community.
-    
-    These are few rules, we would like you to adhere to, when interacting with anyone in this group.
-    
-    1.No Foul Language.
-    
-    
-    Many Thanks!
-    Bot""".format(chat_user_first_name),"MarkDown")
 
             elif "left_chat_member" in last_update["message"].keys():
 
                 print("Sending GoodBye....")
 
                 last_update_id = last_update['update_id']
-
                 leaving_memeber = last_update['message']['left_chat_member']
-
-                print(leaving_memeber)
                 chat_id = leaving_memeber["id"]
                 chat_name = leaving_memeber["first_name"]
-
-                print(chat_id)
-
-                greet_bot.sendMessage(chat_id, "Sorry to see you go {}".format(chat_name))
+                greet_bot.sendMessage(chat_id, leaving_message.replace("<name>", chat_name))
+                greet_bot.sendMessage(chat_id, leaving_message_to_the_group.replace("<name>", chat_name))
 
             else:
                 try:
@@ -96,7 +97,7 @@ def main():
                         last_update, last_update_id, last_chat_text, last_chat_id, last_chat_name))
 
                     if last_chat_text.lower() in greetings and today == now.day and 6 <= hour < 12:
-                        greet_bot.sendMessage(last_chat_id, 'Good Morning  {}'.format(last_chat_name))
+                        greet_bot.sendMessage(last_chat_id, 'Good Morning {}'.format(last_chat_name))
                         today += 1
                     elif last_chat_text.lower() in greetings and today == now.day and 12 <= hour < 17:
                         greet_bot.sendMessage(last_chat_id, 'Good Afternoon {}'.format(last_chat_name))
@@ -104,23 +105,8 @@ def main():
                     elif last_chat_text.lower() in greetings and today == now.day and 17 <= hour < 23:
                         greet_bot.sendMessage(last_chat_id, 'Good Evening  {}'.format(last_chat_name))
                         today += 1
-                    elif last_chat_text.lower() == "greet me":
-                        greet_bot.sendMessage(last_chat_id, """Hey There {},
-    Welcome to our profound community. Glad you have considered to be part of this community.
-    
-    These are few rules, we would like you to adhere to, when interacting with anyone in this group.
-    
-    1.No Foul Language.
-    
-    
-    Many Thanks!
-    Bot""".format(last_chat_name))
-
-                    elif last_chat_text.lower() == "help":
-                        greet_bot.sendMessage(last_chat_id, "*hello* There, is this in bold ?", "MarkDown")
                     else:
-                        greet_bot.sendMessage(last_chat_id, 'Good Morning! Its Early hours {}!\n'
-                                                             'Please go back to sleep.'.format(last_chat_name))
+                        greet_bot.sendMessage(last_chat_id, 'Hey There {}!'.format(last_chat_name))
                         today += 1
 
                 except:
