@@ -5,6 +5,7 @@ import telebot
 import requests
 import datetime
 from time import sleep
+import telepot
 
 greet_bot = telepot.Bot("570531436:AAGhlmqiyehM7hS_GzmvS9_pdnhUN96VFV8")
 reply_bot = telepot.Bot("600394117:AAFWzJN8ybJTo5IKhEyYtPKxNjkGBvxVugA")
