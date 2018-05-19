@@ -228,7 +228,6 @@ class HostResponse(telepot.Bot):
                 pass
             else:
                 self.latest_update = self.fetch_updates()[0]
-                print(self.latest_update)
                 self.objectify_latest_update()
                 self.greet_users()
                 self.custom_commands()
