@@ -114,7 +114,7 @@ def main():
 
             new_offset = last_update_id + 1
 
-        sleep(10)
+        sleep(1)
 
 
 main()
