@@ -48,20 +48,6 @@ def current_time():
     return "{0}:{1}:{2}".format( now.hour, now.minute, now.second)
 
 
-
-class ControlledThreading(threading.Thread):
-    def __init__(self, target_function,delay):
-        self._target = target_function
-        self._delay = delay
-        threading.Thread.__init__(self)
-
-    def run(self):
-        self._target()
-
-
-
-
-
 def greet_users():
     new_offset = None
     today = now.day
@@ -151,8 +137,8 @@ def common_tasks():
         sleep(5)
 
 
-MainThread = ControlledThreading(greet_users())
-TasksThread = ControlledThreading(common_tasks())
+MainThread = threading.Thread(target=greet_users)
+TasksThread = threading.Thread(target=common_tasks)
 
 MainThread.start()
 TasksThread.start()
