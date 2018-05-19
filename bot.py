@@ -64,10 +64,7 @@ def greet_users():
             pass
         else:
             last_update = greet_bot.getUpdates(new_offset)[0]
-            print(last_update)
-
             last_update_id = last_update['update_id']
-
             if "new_chat_members" in last_update["message"].keys():
                 print("Sending Greeting....")
                 new_member = last_update['message']['new_chat_members']
@@ -138,7 +135,7 @@ def common_tasks():
 
 
 MainThread = threading.Thread(target=greet_users)
-TasksThread = threading.Thread(target=common_tasks)
+#TasksThread = threading.Thread(target=common_tasks)
 
 MainThread.start()
-TasksThread.start()
+#TasksThread.start()
