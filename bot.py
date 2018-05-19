@@ -83,6 +83,7 @@ def main():
                 leaving_memeber = last_update['message']['left_chat_member']
                 chat_id = leaving_memeber["id"]
                 chat_name = leaving_memeber["first_name"]
+                chat_group_id = last_update["message"]["chat"]["id"]
                 greet_bot.sendMessage(chat_id, leaving_message.replace("<name>", chat_name))
                 greet_bot.sendMessage(chat_group_id, leaving_message_to_the_group.replace("<name>", chat_name))
 
