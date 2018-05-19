@@ -123,12 +123,12 @@ def common_tasks():
 
         print ("Task Process is Idle...")
 
-        greet_bot.getUpdates()
+        reply_bot.getUpdates()
 
-        if len(greet_bot.getUpdates(new_offset)) == 0:
+        if len(reply_bot.getUpdates(new_offset)) == 0:
             pass
         else:
-            last_update = greet_bot.getUpdates(new_offset)[0]
+            last_update = reply_bot.getUpdates(new_offset)[0]
             print(last_update)
             last_update_id = last_update['update_id']
 
