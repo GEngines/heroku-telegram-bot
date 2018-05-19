@@ -32,14 +32,15 @@ import requests
 import datetime
 from time import sleep
 import telepot
-import os
+import os,sys
 import time
 import  threading
-os.environ["TZ"] = "Asia/Calcutta"
-time.tzset()
 
-greet_bot = telepot.Bot(WelcomeBot_Token)
-reply_bot = telepot.Bot(ReplyBot_Token)
+from collections import defaultdict
+
+if hasattr(time, 'tzset'):
+    os.environ["TZ"] = "Asia/Calcutta"
+    time.tzset()
 
 now = datetime.datetime.now()
 
@@ -48,97 +49,175 @@ def current_time():
     return "{0}:{1}:{2}".format( now.hour, now.minute, now.second)
 
 
-def greet_users():
-    new_offset = None
-    today = now.day
-    hour = now.hour
-    minute = now.minute
-    seconds = now.second
-
-    while True:
-
-        print ("Checking for new Messages...")
-        greet_bot.getUpdates()
-
-        if len(greet_bot.getUpdates(new_offset)) == 0:
-            pass
+class Message(object):
+    def __init__(self, update):
+        self._update = update
+        self.ID = self._update["message_id"]
+        self.Date = self._update["date"]
+        self.Chat = Chat(self._update["chat"])
+        if "text" in self._update.keys():
+            self.Text = self._update["text"]
         else:
-            last_update = greet_bot.getUpdates(new_offset)[0]
-            last_update_id = last_update['update_id']
-            if "new_chat_members" in last_update["message"].keys():
-                print("Sending Greeting....")
-                new_member = last_update['message']['new_chat_members']
-                chat_group_id = last_update["message"]["chat"]["id"]
+            self.Text = ""
+        self.From = FromObj(self._update["from"])
+        self.IncomingMembers = ""
+        self.OutgoingMembers = ""
+        self.classify_members()
 
-                for each in new_member:
-                    chat_user_id = each["id"]
-                    chat_user_first_name = each["first_name"]
-                    _message = welcome_message.replace("<name>", "*"+chat_user_first_name+"*")
+    def classify_members(self):
 
-                    if not each["is_bot"]:
-                        greet_bot.sendMessage(chat_user_id, _message, "MarkDown")
-                        greet_bot.sendMessage(chat_group_id, _message, "MarkDown")
+        local_list_in = []
+        if "new_chat_members" in self._update:
+            for e in self._update["new_chat_members"]:
+                local_list_in.append(Members(e))
 
-            elif "left_chat_member" in last_update["message"].keys():
-                print("Sending GoodBye....")
-                leaving_member = last_update['message']['left_chat_member']
-                chat_id = leaving_member["id"]
-                chat_name = leaving_member["first_name"]
-                chat_group_id = last_update["message"]["chat"]["id"]
-                if not leaving_member["is_bot"]:
-                    greet_bot.sendMessage(chat_id, leaving_message.replace("<name>", chat_name))
-                    greet_bot.sendMessage(chat_group_id, leaving_message_to_the_group.replace("<name>", chat_name))
+            self.IncomingMembers = local_list_in
+
+        if "left_chat_member" in self._update:
+            self.OutgoingMembers = Members(self._update['left_chat_member'])
+
+
+class Chat(object):
+    def __init__(self,chat):
+        self._chat = chat
+        self.ID = ""
+        self.FirstName = ""
+        self.LastName = ""
+        self.Type = ""
+        self.isBot = False
+        self.Title = ""
+        self.AllMembersAdmins = False
+        self.update_values()
+
+    def update_values(self):
+        self.ID = self._chat["id"]
+        self.Type = self._chat["type"]
+
+        if "first_name" in self._chat.keys():
+            self.FirstName = self._chat["first_name"]
+            self.LastName = self._chat["last_name"]
+        else:
+            self.AllMembersAdmins = self._chat["all_members_are_administrators"]
+            self.Title = self._chat["title"]
+
+
+class FromObj(object):
+    def __init__(self,fromValues):
+        self._fromvalues = fromValues
+        self.ID = ""
+        self.IsBot = ""
+        self.FirstName = ""
+        self.LastName = ""
+        self.Language = ""
+        self.update_values()
+
+    def update_values(self):
+        self.ID = self._fromvalues["id"]
+        self.FirstName = self._fromvalues["first_name"]
+        self.LastName = self._fromvalues["last_name"]
+        self.IsBot = self._fromvalues["is_bot"]
+        self.Language = self._fromvalues["language_code"]
+
+
+class Members(object):
+    def __init__(self, cm):
+        self._cm = cm
+        self.ID = ""
+        self.IsBot = ""
+        self.FirstName = ""
+        self.UserName = ""
+        self.update_values()
+
+    def update_values(self):
+        self.ID = self._cm["id"]
+        self.IsBot = self._cm["is_bot"]
+        self.FirstName = self._cm["first_name"]
+        self.UserName = self._cm["username"]
+
+
+class HostResponse(telepot.Bot):
+    def __init__(self, token):
+        self._token = token
+        self.new_offset = None
+        self.Now = datetime.datetime.now()
+        telepot.Bot.__init__(self, token)
+        self.members_joined = defaultdict(list)
+        self.members_left = defaultdict(list)
+        self.latest_update = ""
+
+    def fetch_updates(self):
+        return self.getUpdates(self.new_offset)
+
+    def parse_update(self):
+        while True:
+            print("Checking for new Messages...")
+            if len(self.fetch_updates()) == 0:
+                pass
             else:
-                try:
-                    last_chat_text = last_update['message']['text']
-                    last_chat_id = last_update['message']['chat']['id']
-                    last_chat_name = last_update['message']['chat']['first_name']
+                self.latest_update = self.fetch_updates()[0]
+                print(self.latest_update)
+                self.objectify_latest_update()
+                self.greet_users()
+                self.custom_commands()
 
-                    if last_chat_text.lower() in greetings and today == now.day and 6 <= hour < 12:
-                        greet_bot.sendMessage(last_chat_id, 'Good Morning {}'.format(last_chat_name))
-                        today += 1
-                    elif last_chat_text.lower() in greetings and today == now.day and 12 <= hour < 17:
-                        greet_bot.sendMessage(last_chat_id, 'Good Afternoon {}'.format(last_chat_name))
-                        today += 1
-                    elif last_chat_text.lower() in greetings and today == now.day and 17 <= hour < 23:
-                        greet_bot.sendMessage(last_chat_id, 'Good Evening  {}'.format(last_chat_name))
-                        today += 1
-                    else:
-                        greet_bot.sendMessage(last_chat_id, 'Hey There {}!'.format(last_chat_name))
-                        today += 1
+                self.new_offset = self.latest_update["update_id"] + 1
+            sleep(1)
 
-                except:
-                    greet_bot.sendMessage("607211820", "Issue Occurred!")
-
-            new_offset = last_update_id + 1
-
-        sleep(1)
+    def objectify_latest_update(self):
+        self.Message = Message(self.latest_update["message"])
 
 
-def common_tasks():
+    def custom_commands(self):
+        last_chat_text = self.Message.Text.lower()
+        last_chat_id = self.Message.From.ID
 
-    new_offset = None
+        if last_chat_text == "/getnewmemberslist" and not self.Message.From.IsBot:
+            self.sendMessage(last_chat_id, "You will get the list shortly.")
 
-    while True:
+    def greet_users(self):
 
-        print ("Task Process is Idle...")
+        if self.Message.IncomingMembers != "":
+            print("Sending Greeting....")
+            for eachMember in self.Message.IncomingMembers:
+                _message = welcome_message.replace("<name>", "*"+eachMember.FirstName+"*")
+                if not eachMember.IsBot:
+                    self.sendMessage(eachMember.ID, _message, "MarkDown")
+                    self.sendMessage(self.Message.Chat.ID, _message, "MarkDown")
+                    _temp_list = []
+                    _temp_list.append(eachMember.ID)
+                    _temp_list.append(eachMember.FirstName)
+                    self.members_joined[self.Message.Chat.ID].append(_temp_list)
+                else:
+                    print ("Oops! Looks like the member is a Bot!")
 
-        reply_bot.getUpdates()
+        if self.Message.OutgoingMembers != "":
+            print("Sending GoodBye....")
+            if not self.Message.OutgoingMembers.IsBot:
+                self.sendMessage(self.Message.OutgoingMembers.ID, leaving_message.replace("<name>", self.Message.OutgoingMembers.FirstName))
+                self.sendMessage(self.Message.Chat.ID, leaving_message_to_the_group.replace("<name>", self.Message.OutgoingMembers.FirstName))
+                _temp_list = []
+                _temp_list.append(self.Message.OutgoingMembers.ID)
+                _temp_list.append(self.Message.OutgoingMembers.FirstName)
+                _temp_list.append()
+                self.members_left[self.Message.Chat.ID].append(_temp_list)
+            else:
+                print("Oops! Looks like the member is a Bot!")
 
-        if len(reply_bot.getUpdates(new_offset)) == 0:
-            pass
         else:
-            last_update = reply_bot.getUpdates(new_offset)[0]
-            print(last_update)
-            last_update_id = last_update['update_id']
+            if not self.Message.From.IsBot and self.Message.Text != "":
+                last_chat_text = self.Message.Text.lower()
+                if last_chat_text in greetings and 6 <= self.Now.hour < 12:
+                    self.sendMessage(self.Message.Chat.ID, 'Good Morning {}'.format(self.Message.Chat.FirstName))
+                elif last_chat_text in greetings and 12 <= self.Now.hour < 17:
+                    self.sendMessage(self.Message.Chat.ID, 'Good Afternoon {}'.format(self.Message.Chat.FirstName))
+                elif last_chat_text in greetings and 17 <= self.Now.hour < 23:
+                    self.sendMessage(self.Message.Chat.ID, 'Good Evening  {}'.format(self.Message.Chat.FirstName))
+                elif last_chat_text in greetings and 0 <= self.Now.hour <= 5:
+                    self.sendMessage(self.Message.Chat.ID, 'Hey There {}!'.format(self.Message.Chat.FirstName))
 
-            new_offset = last_update_id + 1
+    def run(self):
+        self.parse_update()
 
-        sleep(1)
 
-
-MainThread = threading.Thread(target=greet_users)
-#TasksThread = threading.Thread(target=common_tasks)
-
-MainThread.start()
-#TasksThread.start()
+GreetingBot = HostResponse(WelcomeBot_Token)
+GreetingBot.run()
