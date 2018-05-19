@@ -62,7 +62,7 @@ class ControlledThreading(threading.Thread):
 
 
 
-def main():
+def greet_users():
     new_offset = None
     today = now.day
     hour = now.hour
@@ -151,7 +151,7 @@ def common_tasks():
         sleep(5)
 
 
-MainThread = ControlledThreading(main())
+MainThread = ControlledThreading(greet_users())
 TasksThread = ControlledThreading(common_tasks())
 
 MainThread.start()
