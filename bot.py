@@ -137,7 +137,7 @@ def common_tasks():
         sleep(1)
 
 
-#MainThread = threading.Thread(target=greet_users)
+MainThread = threading.Thread(target=greet_users)
 #TasksThread = threading.Thread(target=common_tasks)
 
 MainThread.start()
