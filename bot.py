@@ -84,7 +84,7 @@ def main():
                 chat_id = leaving_memeber["id"]
                 chat_name = leaving_memeber["first_name"]
                 greet_bot.sendMessage(chat_id, leaving_message.replace("<name>", chat_name))
-                greet_bot.sendMessage(chat_id, leaving_message_to_the_group.replace("<name>", chat_name))
+                greet_bot.sendMessage(chat_group_id, leaving_message_to_the_group.replace("<name>", chat_name))
 
             else:
                 try:
