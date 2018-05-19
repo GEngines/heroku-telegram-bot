@@ -135,6 +135,8 @@ def common_tasks():
 
     while True:
 
+        print ("Task Process is Idle...")
+
         greet_bot.getUpdates()
 
         if len(greet_bot.getUpdates(new_offset)) == 0:
