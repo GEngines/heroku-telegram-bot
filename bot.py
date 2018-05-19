@@ -36,7 +36,7 @@ import os
 import time
 import  threading
 os.environ["TZ"] = "Asia/Calcutta"
-#time.tzset()
+time.tzset()
 
 greet_bot = telepot.Bot(WelcomeBot_Token)
 reply_bot = telepot.Bot(ReplyBot_Token)
@@ -138,7 +138,7 @@ def common_tasks():
 
 
 #MainThread = threading.Thread(target=greet_users)
-TasksThread = threading.Thread(target=common_tasks)
+#TasksThread = threading.Thread(target=common_tasks)
 
-#MainThread.start()
-TasksThread.start()
+MainThread.start()
+#TasksThread.start()
