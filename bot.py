@@ -36,7 +36,7 @@ import os
 import time
 import  threading
 os.environ["TZ"] = "Asia/Calcutta"
-time.tzset()
+#time.tzset()
 
 greet_bot = telepot.Bot(WelcomeBot_Token)
 reply_bot = telepot.Bot(ReplyBot_Token)
@@ -74,8 +74,10 @@ def greet_users():
                     chat_user_id = each["id"]
                     chat_user_first_name = each["first_name"]
                     _message = welcome_message.replace("<name>", "*"+chat_user_first_name+"*")
-                    greet_bot.sendMessage(chat_user_id, _message, "MarkDown")
-                    greet_bot.sendMessage(chat_group_id, _message, "MarkDown")
+
+                    if not each["is_bot"]:
+                        greet_bot.sendMessage(chat_user_id, _message, "MarkDown")
+                        greet_bot.sendMessage(chat_group_id, _message, "MarkDown")
 
             elif "left_chat_member" in last_update["message"].keys():
                 print("Sending GoodBye....")
@@ -83,8 +85,9 @@ def greet_users():
                 chat_id = leaving_member["id"]
                 chat_name = leaving_member["first_name"]
                 chat_group_id = last_update["message"]["chat"]["id"]
-                greet_bot.sendMessage(chat_id, leaving_message.replace("<name>", chat_name))
-                greet_bot.sendMessage(chat_group_id, leaving_message_to_the_group.replace("<name>", chat_name))
+                if not leaving_member["is_bot"]:
+                    greet_bot.sendMessage(chat_id, leaving_message.replace("<name>", chat_name))
+                    greet_bot.sendMessage(chat_group_id, leaving_message_to_the_group.replace("<name>", chat_name))
             else:
                 try:
                     last_chat_text = last_update['message']['text']
@@ -131,11 +134,11 @@ def common_tasks():
 
             new_offset = last_update_id + 1
 
-        sleep(5)
+        sleep(1)
 
 
-MainThread = threading.Thread(target=greet_users)
-#TasksThread = threading.Thread(target=common_tasks)
+#MainThread = threading.Thread(target=greet_users)
+TasksThread = threading.Thread(target=common_tasks)
 
-MainThread.start()
-#TasksThread.start()
+#MainThread.start()
+TasksThread.start()
