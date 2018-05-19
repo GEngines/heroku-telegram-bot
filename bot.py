@@ -215,7 +215,7 @@ class HostResponse(telepot.Bot):
         Get updates for each new Message from the server.
         :return: dictionary
         '''
-        return self.getUpdates(self.new_offset)
+        return self.getUpdates(self.new_offset, timeout=100)
 
     def parse_update(self):
         '''
