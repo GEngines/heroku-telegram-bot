@@ -280,7 +280,6 @@ class HostResponse(telepot.Bot):
                 _temp_list = []
                 _temp_list.append(self.Message.OutgoingMembers.ID)
                 _temp_list.append(self.Message.OutgoingMembers.FirstName)
-                _temp_list.append()
                 self.members_left[self.Message.Chat.ID].append(_temp_list)
             else:
                 print("Oops! Looks like the member is a Bot!")
