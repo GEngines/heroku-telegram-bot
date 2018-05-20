@@ -66,7 +66,7 @@ leaving_message_to_the_group = "Oops! We just lost <name>"
 
 
 # Basic Greetings to which Bot will reply back with a basic greeting.
-greetings = ('hello', 'hi', 'greetings', 'sup', "greet me")
+greetings = ('hello', 'hi', 'hey', 'greetings', 'sup', "greet me")
 
 
 ######################### DO NOT MODIFY ANYTHING BEYOND THIS POINT ######################################
@@ -192,7 +192,8 @@ class Members(object):
         self.ID = self._cm["id"]
         self.IsBot = self._cm["is_bot"]
         self.FirstName = self._cm["first_name"]
-        self.UserName = self._cm["username"]
+        if "username" in self._cm:
+            self.UserName = self._cm["username"]
 
 
 class HostResponse(telepot.Bot):
