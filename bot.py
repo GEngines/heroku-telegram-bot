@@ -148,9 +148,11 @@ class Chat(object):
 
         if "first_name" in self._chat:
             self.FirstName = self._chat["first_name"]
+        if "last_name" in self._chat:
             self.LastName = self._chat["last_name"]
-        else:
+        if "all_members_are_administrators" in self._chat:
             self.AllMembersAdmins = self._chat["all_members_are_administrators"]
+        if "title" in self._chat:
             self.Title = self._chat["title"]
 
 
@@ -165,13 +167,17 @@ class FromObj(object):
         self.FirstName = ""
         self.LastName = ""
         self.Language = ""
+        self.UserName = ""
         self.update_values()
 
     def update_values(self):
         self.ID = self._from_values["id"]
         self.FirstName = self._from_values["first_name"]
-        self.LastName = self._from_values["last_name"]
+        if "last_name" in self._from_values:
+            self.LastName = self._from_values["last_name"]
         self.IsBot = self._from_values["is_bot"]
+        if "username" in self._from_values:
+            self.UserName = self._from_values["username"]
         if "language_code" in self._from_values:
             self.Language = self._from_values["language_code"]
 
