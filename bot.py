@@ -59,10 +59,10 @@ leaving_message_to_the_group = "Oops! We just lost <name>"
 
 # Please update the Token for the Bot you wish to use for Welcoming Users to the Group.
 
-WelcomeBot_Token = "570531436:AAGhlmqiyehM7hS_GzmvS9_pdnhUN96VFV8"
+#WelcomeBot_Token = "570531436:AAGhlmqiyehM7hS_GzmvS9_pdnhUN96VFV8"
 
-# Please update the Token for the bots you wish to be reply Bots.
-ReplyBot_Token = "600394117:AAFWzJN8ybJTo5IKhEyYtPKxNjkGBvxVugA"
+# Please update the Token for the bots you wish to be reply Bots. in the Config
+#ReplyBot_Token = "600394117:AAFWzJN8ybJTo5IKhEyYtPKxNjkGBvxVugA"
 
 
 # Basic Greetings to which Bot will reply back with a basic greeting.
@@ -80,11 +80,6 @@ import time
 import  threading
 from time import sleep
 from collections import defaultdict
-
-
-# Bots
-print ("Current Bot is : ", os.environ.get("WelcomeBotToken"))
-
 
 if hasattr(time, 'tzset'):
     os.environ["TZ"] = "Asia/Calcutta"
@@ -305,5 +300,6 @@ class HostResponse(telepot.Bot):
         self.parse_update()
 
 
-#GreetingBot = HostResponse(WelcomeBot_Token, 1)
-#GreetingBot.run()
+GreetingBot = HostResponse(os.environ.get("WelcomeBotToken"), 1)
+GreetingBot.run()
+
