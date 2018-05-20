@@ -74,18 +74,21 @@ greetings = ('hello', 'hi', 'greetings', 'sup', "greet me")
 
 import requests
 import datetime
-from time import sleep
 import telepot
-import os,sys
+import os
 import time
 import  threading
-
+from time import sleep
 from collections import defaultdict
+
+
+# Bots
+print ("Current Bot is : ", os.environ.get("WelcomeBotToken"))
+
 
 if hasattr(time, 'tzset'):
     os.environ["TZ"] = "Asia/Calcutta"
     time.tzset()
-
 
 
 def current_time():
@@ -302,5 +305,5 @@ class HostResponse(telepot.Bot):
         self.parse_update()
 
 
-GreetingBot = HostResponse(WelcomeBot_Token, 1)
-GreetingBot.run()
+#GreetingBot = HostResponse(WelcomeBot_Token, 1)
+#GreetingBot.run()
