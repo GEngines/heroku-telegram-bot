@@ -240,7 +240,11 @@ class HostResponse(telepot.Bot):
         Function to convert the Message from the server to an Object.
         :return: None
         '''
-        self.Message = Message(self.latest_update["message"])
+
+        if "message" in self.latest_update:
+            self.Message = Message(self.latest_update["message"])
+        if "edited_message" in self.latest_update:
+            self.Message = Message(self.latest_update["edited_message"])
 
     def custom_commands(self):
         '''
