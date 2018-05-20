@@ -173,7 +173,8 @@ class FromObj(object):
         self.FirstName = self._from_values["first_name"]
         self.LastName = self._from_values["last_name"]
         self.IsBot = self._from_values["is_bot"]
-        self.Language = self._from_values["language_code"]
+        if "language_code" in self._from_values:
+            self.Language = self._from_values["language_code"]
 
 
 class Members(object):
