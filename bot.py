@@ -160,7 +160,6 @@ class FromObj(object):
     '''
     def __init__(self, f):
         self._from_values = f
-        print (self._from_values)
         self.ID = ""
         self.IsBot = ""
         self.FirstName = ""
