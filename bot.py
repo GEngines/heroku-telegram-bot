@@ -221,6 +221,7 @@ class HostResponse(telepot.Bot):
         Get updates for each new Message from the server.
         :return: dictionary
         '''
+
         return self.getUpdates(self.new_offset, timeout=100)
 
     def parse_update(self):
@@ -229,11 +230,12 @@ class HostResponse(telepot.Bot):
         :return: None
         '''
         while True:
-            print("Checking for new Messages...")
-            if len(self.fetch_updates()) == 0:
+            print("{} Checking for new Messages...".format(current_time()))
+            updates = self.fetch_updates()
+            if len(updates) == 0:
                 pass
             else:
-                self.latest_update = self.fetch_updates()[0]
+                self.latest_update = updates[0]
                 self.objectify_latest_update()
                 self.greet_users()
                 self.custom_commands()
