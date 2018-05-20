@@ -59,7 +59,7 @@ leaving_message_to_the_group = "Oops! We just lost <name>"
 
 # Please update the Token for the Bot you wish to use for Welcoming Users to the Group.
 
-#WelcomeBot_Token = "570531436:AAGhlmqiyehM7hS_GzmvS9_pdnhUN96VFV8"
+WelcomeBot_Token = "570531436:AAGhlmqiyehM7hS_GzmvS9_pdnhUN96VFV8"
 
 # Please update the Token for the bots you wish to be reply Bots. in the Config
 #ReplyBot_Token = "600394117:AAFWzJN8ybJTo5IKhEyYtPKxNjkGBvxVugA"
@@ -305,13 +305,16 @@ class HostResponse(telepot.Bot):
                     self.sendMessage(self.Message.Chat.ID, 'Good Afternoon {}'.format(self.Message.Chat.FirstName))
                 elif last_chat_text in greetings and 17 <= self.Now.hour < 23:
                     self.sendMessage(self.Message.Chat.ID, 'Good Evening  {}'.format(self.Message.Chat.FirstName))
-                elif last_chat_text in greetings and 23 <= self.Now.hour <= 5:
+                elif last_chat_text in greetings and self.Now.hour >= 23:
+                    self.sendMessage(self.Message.Chat.ID, 'Hey There {}!'.format(self.Message.Chat.FirstName))
+                elif last_chat_text in greetings and 0 <= self.Now.hour < 6:
                     self.sendMessage(self.Message.Chat.ID, 'Hey There {}!'.format(self.Message.Chat.FirstName))
 
     def run(self):
         self.parse_update()
 
 
-GreetingBot = HostResponse(os.environ.get("WelcomeBotToken"), 1)
+# GreetingBot = HostResponse(os.environ.get("WelcomeBotToken"), 1)
+GreetingBot = HostResponse(WelcomeBot_Token, 1)
 GreetingBot.run()
 
