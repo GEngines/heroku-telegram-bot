@@ -288,6 +288,7 @@ class HostResponse(telepot.Bot):
         else:
             if not self.Message.From.IsBot and self.Message.Text != "":
                 last_chat_text = self.Message.Text.lower()
+                self.Now = datetime.datetime.now()
                 if last_chat_text in greetings and 6 <= self.Now.hour < 12:
                     self.sendMessage(self.Message.Chat.ID, 'Good Morning {}'.format(self.Message.Chat.FirstName))
                 elif last_chat_text in greetings and 12 <= self.Now.hour < 17:
